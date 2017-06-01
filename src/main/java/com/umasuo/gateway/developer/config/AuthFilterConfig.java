@@ -18,11 +18,6 @@ public class AuthFilterConfig {
   /**
    * Ignored hosts that do not need to check auth.
    */
-  private List<String> hosts = new ArrayList<>();
-
-  /**
-   * Ignored path that do not need to check auth.
-   */
-  private List<String> path = new ArrayList<>();
+  private List<IgnoreRule> rules = new ArrayList<>();
 
 }

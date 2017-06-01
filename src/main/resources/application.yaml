@@ -43,9 +43,10 @@ authentication:
 
 auth:
   ignored:
-    hosts:
-    path:
-      - ^(/auth/anonymous)
-      - ^(/auth/signin)[a-z0-9\-/]*
-      - ^(/auth/signup)
-      - ^(/customers/)[a-z0-9\-/]*
+    rules:
+      - host: www.umasuo.com
+        path: ^(/auth/anonymous)
+        method: GET
+      - host: www.abc.com
+        path: ^(/auth/signin)[a-z0-9\-/]*
+        method: POST

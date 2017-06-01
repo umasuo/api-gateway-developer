@@ -3,6 +3,7 @@ package com.umasuo.gateway.developer.filters;
 import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.umasuo.gateway.developer.config.AuthFilterConfig;
+import com.umasuo.gateway.developer.config.IgnoreRule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import static com.netflix.zuul.context.RequestContext.getCurrentContext;
 
 /**
- * Authentication filter for checkout customer's authorization.
+ * 权限验证第一步，这里只验证用户是否已经登陆，并获取其具体权限信息，将开发者ID，权限通过header传入具体service.
  */
 @Component
 public class AuthenticationPreFilter extends ZuulFilter {
@@ -83,10 +84,9 @@ public class AuthenticationPreFilter extends ZuulFilter {
     HttpServletRequest request = ctx.getRequest();
     String method = request.getMethod();
     String path = request.getRequestURI();
-    LOG.debug("Check for host: {}, method: {}.", host, method);
+    LOG.debug("Check for host: {}, path: {}, method: {}.", host, path, method);
     boolean shouldFilter = true;
-    if (config.getHosts().contains(host) ||
-        isPathMatch(path) ||
+    if (isPathMatch(host, path, method) ||
         method.equals("OPTIONS")) {
       LOG.debug("Ignore host: {}, Path: {}, action: {}.", host, path, method);
       shouldFilter = false;
@@ -100,13 +100,15 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @param path String path
    * @return boolean
    */
-  private boolean isPathMatch(String path) {
-    List<String> pathList = config.getPath();
-    String existPath = pathList.stream().filter(
-        pathStr -> Pattern.matches(pathStr, path)
+  private boolean isPathMatch(String host, String path, String method) {
+    List<IgnoreRule> rules = config.getRules();
+    IgnoreRule existPath = rules.stream().filter(
+        rule -> rule.getHost().equals(host) && Pattern.matches(rule.getPath(), path) && rule
+            .getMethod().equals(method)
+
     ).findAny().orElse(null);
 
-    return !StringUtils.isEmpty(existPath);
+    return existPath != null;
   }
 
   /**
@@ -144,12 +146,12 @@ public class AuthenticationPreFilter extends ZuulFilter {
    */
   public String checkAuthentication(String tokenString) {
     LOG.debug("Enter. token: {}", tokenString);
-
     try {
       String token = tokenString.substring(7);
       String uri = authUri + "status?token=" + token;
       LOG.debug("AuthUri: {}", uri);
 
+      // TODO 这里应换成：developerId，developer拥有的权限
       String customerId = restTemplate.getForObject(uri, String.class);
 
       LOG.debug("Exit. developerId: {}", customerId);
