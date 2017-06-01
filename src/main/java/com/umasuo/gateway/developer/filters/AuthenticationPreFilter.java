@@ -4,6 +4,7 @@ import com.netflix.zuul.ZuulFilter;
 import com.netflix.zuul.context.RequestContext;
 import com.umasuo.gateway.developer.config.AuthFilterConfig;
 import com.umasuo.gateway.developer.config.IgnoreRule;
+import com.umasuo.gateway.developer.dto.AuthStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -121,11 +122,12 @@ public class AuthenticationPreFilter extends ZuulFilter {
     RequestContext ctx = getCurrentContext();
     HttpServletRequest request = ctx.getRequest();
     String token = request.getHeader("authorization");
-    String customerId = checkAuthentication(token);
+    AuthStatus authStatus = checkAuthentication(token);
     Enumeration<String> headers = request.getHeaderNames();
-    if (customerId != null) {
+    if (authStatus != null && authStatus.isLogin()) {
       // if true, then set the customerId to header
-      ctx.addZuulRequestHeader("customerId", customerId);
+      ctx.addZuulRequestHeader("developerId", authStatus.getDeveloperId());
+      //TODO 添加权限
       LOG.info("Exit. check auth success.");
     } else {
       // stop routing and return auth failed.
@@ -143,7 +145,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @param tokenString String
    * @return the customer id
    */
-  public String checkAuthentication(String tokenString) {
+  public AuthStatus checkAuthentication(String tokenString) {
     LOG.debug("Enter. token: {}", tokenString);
     try {
       String token = tokenString.substring(7);
@@ -151,10 +153,10 @@ public class AuthenticationPreFilter extends ZuulFilter {
       LOG.debug("AuthUri: {}", uri);
 
       // TODO 这里应换成：developerId，developer拥有的权限
-      String customerId = restTemplate.getForObject(uri, String.class);
+      AuthStatus authStatus = restTemplate.getForObject(uri, AuthStatus.class);
 
-      LOG.debug("Exit. developerId: {}", customerId);
-      return customerId;
+      LOG.debug("Exit. authStatus: {}", authStatus);
+      return authStatus;
     } catch (RestClientException | NullPointerException ex) {
       LOG.debug("Get customerId from authentication service failed.", ex);
       return null;
