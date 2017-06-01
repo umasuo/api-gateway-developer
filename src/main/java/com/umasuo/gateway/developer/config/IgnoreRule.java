@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Auth filter config.
+ * Ignore rule.
  */
 @Data
 public class IgnoreRule {
@@ -16,5 +16,4 @@ public class IgnoreRule {
   private String path;
 
   private String method;
-
 }

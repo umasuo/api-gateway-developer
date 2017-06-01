@@ -137,7 +137,6 @@ public class AuthenticationPreFilter extends ZuulFilter {
     return null;
   }
 
-
   /**
    * Check the auth status
    *
