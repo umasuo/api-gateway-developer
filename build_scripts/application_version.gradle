@@ -1,0 +1,4 @@
+jar {
+    baseName = 'api-gateway-developer'
+    version = '0.1'
+}
