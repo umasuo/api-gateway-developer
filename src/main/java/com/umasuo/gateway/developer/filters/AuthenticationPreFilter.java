@@ -125,7 +125,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
     AuthStatus authStatus = checkAuthentication(token);
     Enumeration<String> headers = request.getHeaderNames();
     if (authStatus != null && authStatus.isLogin()) {
-      // if true, then set the customerId to header
+      // if true, then set the developerId to header
       ctx.addZuulRequestHeader("developerId", authStatus.getDeveloperId());
       //TODO 添加权限
       LOG.info("Exit. check auth success.");
