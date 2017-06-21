@@ -8,34 +8,30 @@ logging:
 
 zuul:
   routes:
-    cart:
-      path: /signin/status/**
-      url: http://localhost:8081/
-    category:
-      path: /categories/**
-      url: http://localhost:8082/
-    auth:
-      path: /auth/**
-      url: http://localhost:8083/
-    customer:
-      path: /customers/**
-      url: http://localhost:8084/
-    inventory:
-      path: /inventory/**
-      url: http://localhost:8085/
-    order:
-      path: /orders/**
-      url: http://localhost:8086/
-    payment:
-      path: /payments/**
-      url: http://localhost:8087/
-    product:
-      path: /products/**
-      url: http://localhost:8088/
-    product-type:
-      path: /product-types/**
-      url: http://localhost:8089/
-
+    data-center:
+      path: /data/**
+      url: http://localhost:8801/data
+    data-definition:
+      path: /datadefinitions/**
+      url: http://localhost:8802/data-definitions
+    developer:
+      path: /developers/**
+      url: http://localhost:8804/developers
+    device-definition:
+      path: /devicedefinitions/**
+      url: http://localhost:8805/device-definitions
+    device-center:
+      path: /devices/**
+      url: http://localhost:8806/devices
+    file:
+      path: /files/**
+      url: http://localhost:8807/files
+    user:
+      path: /users/**
+      url: http://localhost:8809/users
+    report:
+      path: /reports/**
+      url: http://localhost:8811/reports
 
 developer:
   service:
@@ -47,6 +43,6 @@ auth:
       - host: www.umasuo.com
         path: ^(/auth/anonymous)
         method: GET
-      - host: www.abc.com
-        path: ^(/auth/signin)[a-z0-9\-/]*
+      - host: localhost
+        path: ^(/developers/signin)[a-z0-9\-/]*
         method: POST
