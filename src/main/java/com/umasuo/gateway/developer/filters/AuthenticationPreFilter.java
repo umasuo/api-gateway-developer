@@ -32,7 +32,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
   /**
    * Logger.
    */
-  private static final Logger LOG = LoggerFactory.getLogger(AuthenticationPreFilter.class);
+  private static final Logger logger = LoggerFactory.getLogger(AuthenticationPreFilter.class);
 
   /**
    * RestTemplate.
@@ -84,11 +84,11 @@ public class AuthenticationPreFilter extends ZuulFilter {
     HttpServletRequest request = ctx.getRequest();
     String method = request.getMethod();
     String path = request.getRequestURI();
-    LOG.debug("Check for host: {}, path: {}, method: {}.", host, path, method);
+    logger.debug("Check for host: {}, path: {}, method: {}.", host, path, method);
     boolean shouldFilter = true;
     if (isPathMatch(host, path, method) ||
         method.equals("OPTIONS")) {
-      LOG.debug("Ignore host: {}, Path: {}, action: {}.", host, path, method);
+      logger.debug("Ignore host: {}, Path: {}, action: {}.", host, path, method);
       shouldFilter = false;
     }
     return shouldFilter;
@@ -128,13 +128,13 @@ public class AuthenticationPreFilter extends ZuulFilter {
       // if true, then set the developerId to header
       ctx.addZuulRequestHeader("developerId", authStatus.getDeveloperId());
       //TODO 添加权限
-      LOG.info("Exit. Check auth success.");
+      logger.info("Exit. Check auth success.");
     } else {
       // stop routing and return auth failed.
       ctx.setSendZuulResponse(false);
       ctx.addZuulResponseHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
       ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-      LOG.info("Exit. check auth failed.");
+      logger.info("Exit. check auth failed.");
     }
     return null;
   }
@@ -146,18 +146,18 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @return the customer id
    */
   public AuthStatus checkAuthentication(String tokenString, String developerId) {
-    LOG.debug("Enter. token: {}, developerId: {}.", tokenString, developerId);
+    logger.debug("Enter. token: {}, developerId: {}.", tokenString, developerId);
     try {
       String token = tokenString.substring(7);
       String uri = authUri + "signin/status?token=" + token + "&developerId=" + developerId;
-      LOG.debug("AuthUri: {}", uri);
+      logger.debug("AuthUri: {}", uri);
 
       // TODO 这里应换成：developerId，developer拥有的权限
       AuthStatus authStatus = restTemplate.getForObject(uri, AuthStatus.class);
-      LOG.debug("Exit. authStatus: {}", authStatus);
+      logger.debug("Exit. authStatus: {}", authStatus);
       return authStatus;
     } catch (RestClientException | NullPointerException ex) {
-      LOG.debug("Get customerId from authentication service failed.", ex);
+      logger.debug("Get customerId from authentication service failed.", ex);
       return null;
     }
   }
