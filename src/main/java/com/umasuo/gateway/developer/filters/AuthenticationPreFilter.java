@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -122,13 +121,14 @@ public class AuthenticationPreFilter extends ZuulFilter {
     RequestContext ctx = getCurrentContext();
     HttpServletRequest request = ctx.getRequest();
     String token = request.getHeader("authorization");
-    AuthStatus authStatus = checkAuthentication(token);
+    String developerId = request.getHeader("developerId");
+    AuthStatus authStatus = checkAuthentication(token, developerId);
     Enumeration<String> headers = request.getHeaderNames();
     if (authStatus != null && authStatus.isLogin()) {
       // if true, then set the developerId to header
       ctx.addZuulRequestHeader("developerId", authStatus.getDeveloperId());
       //TODO 添加权限
-      LOG.info("Exit. check auth success.");
+      LOG.info("Exit. Check auth success.");
     } else {
       // stop routing and return auth failed.
       ctx.setSendZuulResponse(false);
@@ -145,16 +145,15 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @param tokenString String
    * @return the customer id
    */
-  public AuthStatus checkAuthentication(String tokenString) {
-    LOG.debug("Enter. token: {}", tokenString);
+  public AuthStatus checkAuthentication(String tokenString, String developerId) {
+    LOG.debug("Enter. token: {}, developerId: {}.", tokenString, developerId);
     try {
       String token = tokenString.substring(7);
-      String uri = authUri + "status?token=" + token;
+      String uri = authUri + "signin/status?token=" + token + "&developerId=" + developerId;
       LOG.debug("AuthUri: {}", uri);
 
       // TODO 这里应换成：developerId，developer拥有的权限
       AuthStatus authStatus = restTemplate.getForObject(uri, AuthStatus.class);
-
       LOG.debug("Exit. authStatus: {}", authStatus);
       return authStatus;
     } catch (RestClientException | NullPointerException ex) {

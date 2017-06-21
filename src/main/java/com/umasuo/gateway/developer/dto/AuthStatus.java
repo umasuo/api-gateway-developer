@@ -13,6 +13,5 @@ public class AuthStatus {
 
   private boolean isLogin;
 
-  //TODO 后期添加scope等控制
-//  private List<String> scopes;
+  // TODO: 17/6/21 后期添加scope等控制
 }

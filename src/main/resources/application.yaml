@@ -9,7 +9,7 @@ logging:
 zuul:
   routes:
     cart:
-      path: /carts/**
+      path: /signin/status/**
       url: http://localhost:8081/
     category:
       path: /categories/**
@@ -37,9 +37,9 @@ zuul:
       url: http://localhost:8089/
 
 
-authentication:
+developer:
   service:
-    uri: http://localhost:8083/
+    uri: http://localhost:8804/developers/
 
 auth:
   ignored:
