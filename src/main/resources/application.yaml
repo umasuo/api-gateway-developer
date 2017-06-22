@@ -27,12 +27,9 @@ zuul:
     developer-open:
       path: /developers/open/**
       url: http://localhost:8804/developers/open
-    developer-permission:
-      path: /developers/resource/permissions/**
-      url: http://localhost:8804/developers/resource/permissions
-    developer-request:
-      path: /developers/resource/request/**
-      url: http://localhost:8804/developers/resource/request
+    developer-resource:
+      path: /developers/resource/**
+      url: http://localhost:8804/developers/resource
     device-definition:
       path: /device-definitions/**
       url: http://localhost:8805/device-definitions
