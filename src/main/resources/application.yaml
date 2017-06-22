@@ -12,13 +12,29 @@ zuul:
       path: /data/**
       url: http://localhost:8801/data
     data-definition:
-      path: /datadefinitions/**
+      path: /data-definitions/**
       url: http://localhost:8802/data-definitions
-    developer:
-      path: /developers/**
-      url: http://localhost:8804/developers
+    developer-signin:
+      path: /developers/signin
+      url: http://localhost:8804/
+      stripPrefix: true
+    developer-signout:
+      path: /developers/signout
+      url: http://localhost:8804/
+    developer-signup:
+      path: /developers/signup
+      url: http://localhost:8804/
+    developer-open:
+      path: /developers/open/**
+      url: http://localhost:8804/developers/open
+    developer-permission:
+      path: /developers/resource/permissions/**
+      url: http://localhost:8804/developers/resource/permissions
+    developer-request:
+      path: /developers/resource/request/**
+      url: http://localhost:8804/developers/resource/request
     device-definition:
-      path: /devicedefinitions/**
+      path: /device-definitions/**
       url: http://localhost:8805/device-definitions
     device-center:
       path: /devices/**
@@ -33,6 +49,7 @@ zuul:
       path: /reports/**
       url: http://localhost:8811/reports
 
+
 developer:
   service:
     uri: http://localhost:8804/developers/
@@ -46,3 +63,9 @@ auth:
       - host: localhost
         path: ^(/developers/signin)[a-z0-9\-/]*
         method: POST
+      - host: localhost
+        path: ^(/developers/signup)[a-z0-9\-/]*
+        method: POST
+      - host: localhost
+        path: ^(/developers/signout)[a-z0-9\-/]*
+        method: DELETE
