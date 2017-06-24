@@ -7,6 +7,7 @@ logging:
     org.springframework.cloud: 'DEBUG'
 
 zuul:
+  ignoredPatterns: /data-definitions/**/verify, /data-definitions/verify, /data-definitions**
   routes:
     data-center:
       path: /data/**
