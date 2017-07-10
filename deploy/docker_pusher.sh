@@ -13,6 +13,6 @@ echo ${BRANCH}
 echo "====================================================================="
 if [ "$BRANCH" = "master" ] || [ "$BRANCH" = "dev" ]; then
   docker login --username="$DOCKER_USERNAME" --password="$DOCKER_PASSWORD";
-  docker push reactivesw/api-gateway;
+  docker push umasuo/api-gateway-developer;
 fi
 echo "============= end push docker image ================================="
