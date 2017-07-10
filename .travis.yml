@@ -1,0 +1,15 @@
+sudo: required
+language: java
+jdk: oraclejdk8
+
+services:
+  - docker
+
+script:
+  - gradle clean
+  - gradle wrapper
+  - ./gradlew build buildDocker --info
+
+after_success:
+- bash <(curl -s https://codecov.io/bash)
+- sh ./deploy/docker_pusher.sh
