@@ -150,7 +150,9 @@ public class AuthenticationPreFilter extends ZuulFilter {
     logger.debug("Enter. token: {}, developerId: {}.", tokenString, developerId);
     try {
       String token = tokenString.substring(7);
-      String uri = authUri + "signin/status?token=" + token + "&developerId=" + developerId;
+
+      String uri = authUri + "/v1/developers/" + developerId + "/status?token=" + token;
+
       logger.debug("AuthUri: {}", uri);
 
       // TODO 这里应换成：developerId，developer拥有的权限
