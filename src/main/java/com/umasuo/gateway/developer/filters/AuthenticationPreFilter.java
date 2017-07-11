@@ -103,9 +103,10 @@ public class AuthenticationPreFilter extends ZuulFilter {
   private boolean isPathMatch(String host, String path, String method) {
     List<IgnoreRule> rules = config.getRules();
     IgnoreRule existPath = rules.stream().filter(
-        rule -> rule.getHost().equals(host) && Pattern.matches(rule.getPath(), path) && rule
-            .getMethod().equals(method)
+        rule -> Pattern.matches(rule.getPath(), path) &&
+            rule.getMethod().equals(method)
 
+        //rule.getHost().equals(host) && 应该不需要host
     ).findAny().orElse(null);
 
     return existPath != null;
