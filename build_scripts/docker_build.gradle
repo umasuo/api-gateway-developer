@@ -1,6 +1,6 @@
 apply plugin: 'docker'
 
-group = "umasuo"
+group = "evacloud"
 
 //build docker image
 //doc: https://github.com/Transmode/gradle-docker
@@ -8,7 +8,7 @@ task buildDocker(type: Docker, dependsOn: [build]) {
   applicationName = jar.baseName
   tagVersion = jar.version
 
-  maintainer = 'umasuo <liuquan89@gmail.com>'
+  maintainer = 'evacloud <public@evacloud.cn>'
 
   baseImage='frolvlad/alpine-oraclejdk8:slim'
   volume '/tmp'
