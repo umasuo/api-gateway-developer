@@ -9,12 +9,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Enumeration;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -32,7 +32,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
   /**
    * Logger.
    */
-  private static final Logger logger = LoggerFactory.getLogger(AuthenticationPreFilter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(AuthenticationPreFilter.class);
 
   /**
    * RestTemplate.
@@ -49,7 +49,7 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * Auth filter config.
    */
   @Autowired
-  private AuthFilterConfig config;
+  private transient AuthFilterConfig config;
 
   /**
    * Filter type.
@@ -84,11 +84,10 @@ public class AuthenticationPreFilter extends ZuulFilter {
     HttpServletRequest request = ctx.getRequest();
     String method = request.getMethod();
     String path = request.getRequestURI();
-    logger.debug("Check for host: {}, path: {}, method: {}.", host, path, method);
+    LOGGER.debug("Check for host: {}, path: {}, method: {}.", host, path, method);
     boolean shouldFilter = true;
-    if (isPathMatch(host, path, method) ||
-        method.equals("OPTIONS")) {
-      logger.debug("Ignore host: {}, Path: {}, action: {}.", host, path, method);
+    if (isPathMatch(path, method) || HttpMethod.OPTIONS.matches(method)) {
+      LOGGER.debug("Ignore host: {}, Path: {}, action: {}.", host, path, method);
       shouldFilter = false;
     }
     return shouldFilter;
@@ -100,13 +99,13 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @param path String path
    * @return boolean
    */
-  private boolean isPathMatch(String host, String path, String method) {
+  private boolean isPathMatch(String path, String method) {
     List<IgnoreRule> rules = config.getRules();
     IgnoreRule existPath = rules.stream().filter(
         rule -> Pattern.matches(rule.getPath(), path) &&
             rule.getMethod().equals(method)
 
-        //rule.getHost().equals(host) && 应该不需要host
+        //rule.getHost().equals(host)
     ).findAny().orElse(null);
 
     return existPath != null;
@@ -124,18 +123,17 @@ public class AuthenticationPreFilter extends ZuulFilter {
     String token = request.getHeader("authorization");
     String developerId = request.getHeader("developerId");
     AuthStatus authStatus = checkAuthentication(token, developerId);
-    Enumeration<String> headers = request.getHeaderNames();
     if (authStatus != null && authStatus.isLogin()) {
       // if true, then set the developerId to header
       ctx.addZuulRequestHeader("developerId", authStatus.getDeveloperId());
       //TODO 添加权限
-      logger.info("Exit. Check auth success.");
+      LOGGER.info("Exit. Check auth success.");
     } else {
       // stop routing and return auth failed.
       ctx.setSendZuulResponse(false);
       ctx.addZuulResponseHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
       ctx.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
-      logger.info("Exit. check auth failed.");
+      LOGGER.info("Exit. check auth failed.");
     }
     return null;
   }
@@ -147,20 +145,21 @@ public class AuthenticationPreFilter extends ZuulFilter {
    * @return the customer id
    */
   public AuthStatus checkAuthentication(String tokenString, String developerId) {
-    logger.debug("Enter. token: {}, developerId: {}.", tokenString, developerId);
+    LOGGER.debug("Enter. token: {}, developerId: {}.", tokenString, developerId);
     try {
+      assert tokenString != null;
       String token = tokenString.substring(7);
 
       String uri = authUri + "/v1/developers/" + developerId + "/status?token=" + token;
 
-      logger.debug("AuthUri: {}", uri);
+      LOGGER.debug("AuthUri: {}", uri);
 
-      // TODO 这里应换成：developerId，developer拥有的权限
+      // TODO change it to
       AuthStatus authStatus = restTemplate.getForObject(uri, AuthStatus.class);
-      logger.debug("Exit. authStatus: {}", authStatus);
+      LOGGER.debug("Exit. authStatus: {}", authStatus);
       return authStatus;
-    } catch (RestClientException | NullPointerException ex) {
-      logger.debug("Get customerId from authentication service failed.", ex);
+    } catch (RestClientException ex) {
+      LOGGER.debug("Get customerId from authentication service failed.", ex);
       return null;
     }
   }

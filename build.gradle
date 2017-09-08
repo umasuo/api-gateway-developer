@@ -27,8 +27,8 @@ apply from: 'build_scripts/application_dependencies.gradle'
 apply from: 'build_scripts/docker_build.gradle'
 
 //for code quality assurance
-//apply from: 'build_scripts/quality_assurance/checkstyle.gradle'
-//apply from: 'build_scripts/quality_assurance/findbugs.gradle'
-//apply from: 'build_scripts/quality_assurance/pmd.gradle'
-//apply from: 'build_scripts/quality_assurance/test_coverage.gradle'
+apply from: 'build_scripts/quality_assurance/checkstyle.gradle'
+apply from: 'build_scripts/quality_assurance/findbugs.gradle'
+apply from: 'build_scripts/quality_assurance/pmd.gradle'
+apply from: 'build_scripts/quality_assurance/test_coverage.gradle'
 

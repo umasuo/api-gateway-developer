@@ -16,6 +16,7 @@
     <!-- sometimes conflict with rule of UnnecessaryConstructor -->
     <exclude name="AtLeastOneConstructor" />
     <exclude name="DataflowAnomalyAnalysis" />
+    <exclude name="OnlyOneReturn" />
     <!-- conflict with LocalVariableCouldBeFinal -->
     <exclude name="AvoidFinalLocalVariable" />
   </rule>
