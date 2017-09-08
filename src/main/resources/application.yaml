@@ -72,3 +72,7 @@ auth:
         method: GET
       - host: localhsot
         path: ^(/developers/reset-password)
+        method: POST
+      - host: localhsot
+        path: ^(/developers/reset-password)
+        method: PUT
